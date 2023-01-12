@@ -6,6 +6,7 @@ import productprice
 import pricetype
 import utils
 import client
+import order
 from datetime import datetime
 
 ################################################################ -- message and codes -- ################################################################
