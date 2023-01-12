@@ -149,6 +149,51 @@ def pricetype_list_response(limit,page):
     page_limit = {"page":page,"limit":limit}
     return response_template(message_success,message_code_success,repository.get_pricetype_list(limit,page),page_limit)
 
+def pricetype_delete(data):
+    required_fields = pricetype.required_fields_to_delete.copy()
+    str_data = str(data)
+    if(str_data=="b''"):
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    dict_data = json.loads(data)
+    for item in pricetype.required_fields_to_delete:
+        if item in dict_data:
+            required_fields.remove(item)
+    if len(required_fields) != 0:
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    
+    action = dict_data['action']
+    pricetype_object = pricetype.PriceType()
+    pricetype_object.__dict__ = dict_data
+    try:
+        if(action=='delete'):
+            last_id = repository.delete_pricetype(pricetype_object)
+            return response_template(message_success,message_code_success,last_id)
+        elif(action=='change_status'):
+            last_id = repository.status_change_pricetype(pricetype_object,dict_data[utils.field_status])
+            return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+def pricetype_update(data):
+    required_fields = pricetype.required_fields_to_update.copy()
+    str_data = str(data)
+    if(str_data=="b''"):
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    dict_data = json.loads(data)
+    for item in pricetype.required_fields_to_update:
+        if item in dict_data:
+            required_fields.remove(item)
+    if len(required_fields) != 0:
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    
+    pricetype_object = pricetype.PriceType()
+    pricetype_object.__dict__ = dict_data
+    try:
+        last_id = repository.update_pricetype(pricetype_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
 def pricetype_create(data):
     required_fields = pricetype.required_fields_to_create.copy()
     str_data = str(data)
@@ -159,7 +204,6 @@ def pricetype_create(data):
         if item in dict_data:
             required_fields.remove(item)
     if len(required_fields) != 0:
-        print("Hello")
         return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
     
     pricetype_object = pricetype.PriceType()

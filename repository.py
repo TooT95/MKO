@@ -69,10 +69,31 @@ def get_pricetype_list(limit,page):
         product_list.append(product.toJson())
     return product_list
 
-def create_pricetype(product_object):
+def delete_pricetype(pricetype_object):
     connection = sqlite3.connect(database_name)
     cursor = connection.cursor()
-    cursor = cursor.execute(pricetype_model.query_pricetype_insert(product_object))
+    cursor = cursor.execute(query_delete(pricetype_model.table_name,pricetype_object.id))
+    connection.commit()
+    return cursor.lastrowid
+
+def status_change_pricetype(pricetype_object,status):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(query_status_change(pricetype_model.table_name,pricetype_object.id,status))
+    connection.commit()
+    return cursor.lastrowid
+
+def update_pricetype(pricetype_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(pricetype_model.query_pricetype_update(pricetype_object))
+    connection.commit()
+    return cursor.lastrowid
+
+def create_pricetype(pricetype_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(pricetype_model.query_pricetype_insert(pricetype_object))
     connection.commit()
     return cursor.lastrowid
 

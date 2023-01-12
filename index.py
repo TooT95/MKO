@@ -43,7 +43,7 @@ def productSub(param):
 
 ################################################################ -- priceType -- ################################################################
 
-@app.route('/priceType',methods = ['PUT','GET','POST'])
+@app.route('/priceType',methods = ['PUT','GET','POST','DELETE'])
 def priceType():
     if(request.method=='GET'):
         limit = request.args.get('limit')
@@ -51,6 +51,10 @@ def priceType():
         return response.pricetype_list_response(limit,page)
     elif(request.method=='PUT'):
         return response.pricetype_create(request.data)
+    elif(request.method=='POST'):
+        return response.pricetype_update(request.data)
+    elif(request.method=='DELETE'):
+        return response.pricetype_delete(request.data)
     else:
         return response.method_not_found()
 
