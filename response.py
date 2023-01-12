@@ -38,8 +38,12 @@ def response_template(message,message_code,result_data=None,additional_fields=No
         result['result'] = result_data
     return Response(json.dumps(result),mimetype='application/json')
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def method_not_found():
     return response_template(message_method_not_found,message_code_method_not_found)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 def check_field_to_empty(data,_required_fields):
     required_fields = _required_fields.copy()
@@ -54,6 +58,8 @@ def check_field_to_empty(data,_required_fields):
         return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
     return None
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def find_elem_delete(dict_data,table_name):
     action = dict_data['action']
     id = dict_data[utils.field_id]
@@ -67,6 +73,8 @@ def find_elem_delete(dict_data,table_name):
             return response_template(message_success,message_code_success,last_id)
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 def get_list_response(object_type,limit,page):
     if limit==None:
@@ -87,6 +95,8 @@ def get_list_response(object_type,limit,page):
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     return response_template(message_success,message_code_success,result,page_limit)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 def get_by_id(object_type,id,by_pricetype=False):
     if(id==None):
@@ -111,9 +121,13 @@ def get_by_id(object_type,id,by_pricetype=False):
 
 def product_list_response(limit,page):    
     return get_list_response(utils._product,limit,page)
-    
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def product_by_id_response(id):
     return get_by_id(utils._product,id)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 def product_delete(data):
     check_result = check_field_to_empty(data,product.required_fields_to_delete)
@@ -123,18 +137,14 @@ def product_delete(data):
     dict_data = json.loads(data)
     return find_elem_delete(dict_data,product.table_name)
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def product_update(data):
-    required_fields = product.required_fields_to_update.copy()
-    str_data = str(data)
-    if(str_data=="b''"):
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
-    dict_data = json.loads(data)
-    for item in product.required_fields_to_update:
-        if item in dict_data:
-            required_fields.remove(item)
-    if len(required_fields) != 0:
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    check_result = check_field_to_empty(data,product.required_fields_to_update)
+    if check_result != None:
+        return check_result
     
+    dict_data = json.loads(data)
     product_object = product.Product()
     product_object.__dict__ = dict_data
     try:
@@ -143,18 +153,14 @@ def product_update(data):
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def product_create(data):
-    required_fields = product.required_fields_to_create.copy()
-    str_data = str(data)
-    if(str_data=="b''"):
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
-    dict_data = json.loads(data)
-    for item in product.required_fields_to_create:
-        if item in dict_data:
-            required_fields.remove(item)
-    if len(required_fields) != 0:
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    check_result = check_field_to_empty(data,product.required_fields_to_create)
+    if check_result != None:
+        return check_result
     
+    dict_data = json.loads(data)
     product_object = product.Product()
     dict_data[product.product_created_at] = datetime.now().timestamp()
     product_object.__dict__ = dict_data
@@ -171,8 +177,12 @@ def product_create(data):
 def pricetype_list_response(limit,page):    
     return get_list_response(utils._pricetype,limit,page)
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def pricetype_by_id_response(id):
     return get_by_id(utils._pricetype,id)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 def pricetype_delete(data):
     check_result = check_field_to_empty(data,pricetype.required_fields_to_delete)
@@ -181,6 +191,8 @@ def pricetype_delete(data):
 
     dict_data = json.loads(data)
     return find_elem_delete(dict_data,pricetype.table_name)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 def pricetype_update(data):
     check_result = check_field_to_empty(data,pricetype.required_fields_to_update)
@@ -196,18 +208,14 @@ def pricetype_update(data):
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def pricetype_create(data):
-    required_fields = pricetype.required_fields_to_create.copy()
-    str_data = str(data)
-    if(str_data=="b''"):
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
-    dict_data = json.loads(data)
-    for item in pricetype.required_fields_to_create:
-        if item in dict_data:
-            required_fields.remove(item)
-    if len(required_fields) != 0:
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    check_result = check_field_to_empty(data,pricetype.required_fields_to_create)
+    if check_result != None:
+        return check_result
     
+    dict_data = json.loads(data)
     pricetype_object = pricetype.PriceType()
     dict_data[pricetype.pricetype_created_at] = datetime.now().timestamp()
     pricetype_object.__dict__ = dict_data
@@ -224,6 +232,8 @@ def pricetype_create(data):
 def product_price(id,by_pricetype=True):
     return get_by_id(utils._productprice,id,by_pricetype)
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def product_price_list(limit,page):    
     return get_list_response(utils._productprice,limit,page)
 
@@ -235,18 +245,14 @@ def product_price_delete(data):
     dict_data = json.loads(data)
     return find_elem_delete(dict_data,productprice.table_name)
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def product_price_update(data):
-    required_fields = productprice.required_fields_to_update.copy()
-    str_data = str(data)
-    if(str_data=="b''"):
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
-    dict_data = json.loads(data)
-    for item in productprice.required_fields_to_update:
-        if item in dict_data:
-            required_fields.remove(item)
-    if len(required_fields) != 0:
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    check_result = check_field_to_empty(data,productprice.required_fields_to_update)
+    if check_result != None:
+        return check_result
     
+    dict_data = json.loads(data)
     productprice_object = productprice.ProductPrice()
     dict_data[product.table_name] = repository.get_product_by_id(dict_data[productprice.product_price_product_id])
     dict_data[pricetype.table_name] = repository.get_pricetype_by_id(dict_data[productprice.product_price_price_type_id])
@@ -257,19 +263,14 @@ def product_price_update(data):
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
 def product_price_create(data):
-    required_fields = productprice.required_fields_to_create.copy()
-    str_data = str(data)
-    if(str_data=="b''"):
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
-    dict_data = json.loads(data)
-    for item in productprice.required_fields_to_create:
-        if item in dict_data:
-            required_fields.remove(item)
-    if len(required_fields) != 0:
-        print("Hello")
-        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    check_result = check_field_to_empty(data,productprice.required_fields_to_create)
+    if check_result != None:
+        return check_result
     
+    dict_data = json.loads(data)
     productprice_object = productprice.ProductPrice()
     dict_data[product.table_name] = repository.get_product_by_id(dict_data[productprice.product_price_product_id])
     dict_data[pricetype.table_name] = repository.get_pricetype_by_id(dict_data[productprice.product_price_price_type_id])
@@ -280,17 +281,4 @@ def product_price_create(data):
         return response_template(message_success,message_code_success,last_id)
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
-
-################################################################################################################################################
-
-# with open("price_type.txt", encoding="utf8") as file:
-#     jsondata = json.loads(file.read())
-#     for item in jsondata['result']:
-#         dict_data = {}
-#         dict_data['name'] = item['ВидЦены']
-#         pricetype_object = pricetype.PriceType()
-#         dict_data[pricetype.pricetype_created_at] = datetime.now().timestamp()
-#         pricetype_object.__dict__ = dict_data
-#         lastid = repository.create_pricetype(pricetype_object)
-#         print(lastid)
-    
+   
