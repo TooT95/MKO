@@ -2,7 +2,7 @@ import repository
 import utils
 
 # table name in db
-table_name = "order"
+table_name = "_order"
 
 # table columns
 order_id = "id"
