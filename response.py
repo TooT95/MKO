@@ -256,8 +256,8 @@ def product_price_update(data):
         return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
     
     productprice_object = productprice.ProductPrice()
-    dict_data[product.table_name] = repository.get_product_by_id(dict_data[productprice.product_price_product_id],False)
-    dict_data[pricetype.table_name] = repository.get_pricetype_by_id(dict_data[productprice.product_price_price_type_id],False)
+    dict_data[product.table_name] = repository.get_product_by_id(dict_data[productprice.product_price_product_id])
+    dict_data[pricetype.table_name] = repository.get_pricetype_by_id(dict_data[productprice.product_price_price_type_id])
     productprice_object.__dict__ = dict_data
     try:
         last_id = repository.query_productprice_update(productprice_object)
@@ -279,8 +279,8 @@ def product_price_create(data):
         return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
     
     productprice_object = productprice.ProductPrice()
-    dict_data[product.table_name] = repository.get_product_by_id(dict_data[productprice.product_price_product_id],False)
-    dict_data[pricetype.table_name] = repository.get_pricetype_by_id(dict_data[productprice.product_price_price_type_id],False)
+    dict_data[product.table_name] = repository.get_product_by_id(dict_data[productprice.product_price_product_id])
+    dict_data[pricetype.table_name] = repository.get_pricetype_by_id(dict_data[productprice.product_price_price_type_id])
     dict_data[productprice.product_price_created_at] = datetime.now().timestamp()
     productprice_object.__dict__ = dict_data
     try:

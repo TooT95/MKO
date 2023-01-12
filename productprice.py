@@ -24,7 +24,7 @@ def query_product_price_product(id):
 def query_product_price_list(limit,page):
     return f"SELECT * FROM {table_name} ORDER BY {product_price_id} LIMIT {(page-1)*limit},{limit}"
 def query_product_price_insert(productprice_object):
-    return f"INSERT INTO {table_name} ({product_price_product_id},{product_price_price_type_id},{product_price_price},{product_price_price}) VALUES ({productprice_object.product['id']},{productprice_object.price_type['id']},{productprice_object.price},{productprice_object.created_at})"
+    return f"INSERT INTO {table_name} ({product_price_product_id},{product_price_price_type_id},{product_price_price},{product_price_created_at}) VALUES ({productprice_object.product['id']},{productprice_object.price_type['id']},{productprice_object.price},{productprice_object.created_at})"
 def query_product_price_update(productprice_object):
     return f"UPDATE {table_name} SET {product_price_product_id} = {productprice_object.product['id']},{product_price_price} = {productprice_object.price},{product_price_price_type_id} = {productprice_object.price_type['id']} WHERE {product_price_id} = {productprice_object.id}"
 
@@ -39,12 +39,12 @@ class ProductPrice:
     def __init__(self,id=0,product_id=0,created_at=0.0,price=0.0,price_type_id=0) -> None:
         self.id = id
         if product_id != 0:
-            product = repository.get_product_by_id(product_id,False)
+            product = repository.get_product_by_id(product_id)
             self.product = product
         else:
             self.product = None
         if price_type_id != 0:
-            price_type = repository.get_pricetype_by_id(price_type_id,False)
+            price_type = repository.get_pricetype_by_id(price_type_id)
             self.price_type = price_type
         else:
             self.price_type = None
