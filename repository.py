@@ -4,6 +4,7 @@ import product as product_model
 import pricetype as pricetype_model
 import productprice as productprice_model
 import client as client_model
+import order as order_model
 
 ################################################################ -- util -- ################################################################
 
@@ -182,6 +183,42 @@ def create_client(productprice_object):
     connection = sqlite3.connect(database_name)
     cursor = connection.cursor()
     cursor = cursor.execute(client_model.query_client_insert(productprice_object))
+    connection.commit()
+    return cursor.lastrowid
+################################################################################################################################################
+
+################################################################ -- order -- ################################################################
+
+def get_order(id):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(order_model.query_order_by_id(id))
+    order_cursor = cursor.fetchone()
+    if order_cursor == None:
+        return None
+    else:
+        order = order_model.Order(*order_cursor)
+        return order.toJson()
+
+def get_order_list(limit,page):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(order_model.query_order_list(limit,page))
+    order_list = []
+    for item in cursor.fetchall():
+        order = order_model.Order(*item)
+        order_list.append(order.toJson())
+    return order_list
+
+def update_order(order_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(order_model.query_order_update(order_object))
+    connection.commit()
+    return cursor.lastrowid
+
+def create_order(order_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(order_model.query_order_insert(order_object))
     connection.commit()
     return cursor.lastrowid
 ################################################################################################################################################

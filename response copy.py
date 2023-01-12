@@ -1,8 +1,11 @@
 from flask import Response
 import json
 import repository 
-import product,productprice,pricetype,client,order
+import product
+import productprice
+import pricetype
 import utils
+import client
 from datetime import datetime
 
 ################################################################ -- message and codes -- ################################################################
@@ -92,8 +95,6 @@ def get_list_response(object_type,limit,page):
         result = repository.get_product_price_list(limit,page)
     elif(object_type == utils._client):
         result = repository.get_client_list(limit,page)
-    elif(object_type == utils._order):
-        result = repository.get_order_list(limit,page)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     return response_template(message_success,message_code_success,result,page_limit)
@@ -111,8 +112,6 @@ def get_by_id(object_type,id,by_pricetype=False):
         _result = repository.get_product_price(id,by_pricetype)
     elif(object_type == utils._client):
         _result = repository.get_client(id)
-    elif(object_type == utils._order):
-        _result = repository.get_order(id)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     
