@@ -24,6 +24,7 @@ def product():
         return response.product_delete(request.data)
     else:
         return response.method_not_found()
+        
 
 @app.route('/product/<param>',methods = ['GET'])
 def productSub(param):
