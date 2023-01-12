@@ -88,22 +88,32 @@ def get_list_response(object_type,limit,page):
         return response_template(message_method_not_found,message_code_method_not_found)
     return response_template(message_success,message_code_success,result,page_limit)
 
+def get_by_id(object_type,id,by_pricetype=False):
+    if(id==None):
+        return response_template(message_not_found_element,message_code_not_found_element,None)    
+    if(object_type == utils._product):
+        _result = repository.get_product_by_id(id)
+    elif(object_type == utils._pricetype):
+        _result = repository.get_pricetype_by_id(id)
+    elif(object_type == utils._productprice):
+        _result = repository.get_product_price(id,by_pricetype)
+    else:
+        return response_template(message_method_not_found,message_code_method_not_found)
+    if(_result==None):
+        message = message_not_found_element
+        message_code = message_code_not_found_element
+    else:
+        message = message_success
+        message_code = message_code_success
+    return response_template(message,message_code,_result)
+
 ################################################################ -- product -- ################################################################
 
 def product_list_response(limit,page):    
     return get_list_response(utils._product,limit,page)
     
 def product_by_id_response(id):
-    if(id==None):
-        return response_template(message_not_found_element,message_code_not_found_element,None)    
-    result_product = repository.get_product_by_id(id)
-    if(result_product==None):
-        message = message_not_found_element
-        message_code = message_code_not_found_element
-    else:
-        message = message_success
-        message_code = message_code_success
-    return response_template(message,message_code,result_product)
+    return get_by_id(utils._product,id)
 
 def product_delete(data):
     check_result = check_field_to_empty(data,product.required_fields_to_delete)
@@ -161,6 +171,9 @@ def product_create(data):
 def pricetype_list_response(limit,page):    
     return get_list_response(utils._pricetype,limit,page)
 
+def pricetype_by_id_response(id):
+    return get_by_id(utils._pricetype,id)
+
 def pricetype_delete(data):
     check_result = check_field_to_empty(data,pricetype.required_fields_to_delete)
     if check_result != None:
@@ -204,33 +217,12 @@ def pricetype_create(data):
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
 
-def pricetype_by_id_response(id):
-    if(id==None):
-        return response_template(message_not_found_element,message_code_not_found_element,None)    
-    result_product = repository.get_pricetype_by_id(id)
-    if(result_product==None):
-        message = message_not_found_element
-        message_code = message_code_not_found_element
-    else:
-        message = message_success
-        message_code = message_code_success
-    return response_template(message,message_code,result_product)
-
 ################################################################################################################################################
 
 ################################################################ -- price type -- ################################################################
 
 def product_price(id,by_pricetype=True):
-    if(id==None):
-        return response_template(message_not_found_element,message_code_not_found_element,None)    
-    result_price = repository.get_product_price(id,by_pricetype)
-    if(result_price==None):
-        message = message_not_found_element
-        message_code = message_code_not_found_element
-    else:
-        message = message_success
-        message_code = message_code_success
-    return response_template(message,message_code,result_price)
+    return get_by_id(utils._productprice,id,by_pricetype)
 
 def product_price_list(limit,page):    
     return get_list_response(utils._productprice,limit,page)
