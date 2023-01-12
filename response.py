@@ -2,8 +2,10 @@ from flask import Response
 import json
 import repository 
 import product
+import productprice
 import pricetype
 import uuid
+import utils
 from datetime import datetime
 
 ################################################################ -- message and codes -- ################################################################
@@ -64,6 +66,51 @@ def product_by_id_response(id,is_uid=False):
         message_code = message_code_success
     return response_template(message,message_code,result_product)
 
+def product_delete(data):
+    required_fields = product.required_fields_to_delete.copy()
+    str_data = str(data)
+    if(str_data=="b''"):
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    dict_data = json.loads(data)
+    for item in product.required_fields_to_delete:
+        if item in dict_data:
+            required_fields.remove(item)
+    if len(required_fields) != 0:
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    
+    action = dict_data['action']
+    product_object = product.Product()
+    product_object.__dict__ = dict_data
+    try:
+        if(action=='delete'):
+            last_id = repository.delete_product(product_object)
+            return response_template(message_success,message_code_success,last_id)
+        elif(action=='change_status'):
+            last_id = repository.status_change_product(product_object,dict_data[utils.field_status])
+            return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+def product_update(data):
+    required_fields = product.required_fields_to_update.copy()
+    str_data = str(data)
+    if(str_data=="b''"):
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    dict_data = json.loads(data)
+    for item in product.required_fields_to_update:
+        if item in dict_data:
+            required_fields.remove(item)
+    if len(required_fields) != 0:
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    
+    product_object = product.Product()
+    product_object.__dict__ = dict_data
+    try:
+        last_id = repository.update_product(product_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
 def product_create(data):
     required_fields = product.required_fields_to_create.copy()
     str_data = str(data)
@@ -74,7 +121,6 @@ def product_create(data):
         if item in dict_data:
             required_fields.remove(item)
     if len(required_fields) != 0:
-        print("Hello")
         return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
     
     product_object = product.Product()
@@ -142,7 +188,7 @@ def pricetype_by_id_response(id,is_uid=False):
 
 ################################################################ -- price type -- ################################################################
 
-def product_price(id,by_pricetype=False):
+def product_price(id,by_pricetype=True):
     if(id==None):
         return response_template(message_not_found_element,message_code_not_found_element,None)    
     result_price = repository.get_product_price(id,by_pricetype)
@@ -154,7 +200,41 @@ def product_price(id,by_pricetype=False):
         message_code = message_code_success
     return response_template(message,message_code,result_price)
 
+def product_price_list(limit,page):
+    if limit==None:
+        limit = 10
+    else:
+        limit = int(limit)
+    if page==None:
+        page = 1
+    else:
+        page = int(page)
+    page_limit = {"page":page,"limit":limit}
+    return response_template(message_success,message_code_success,repository.get_product_price_list(limit,page),page_limit)
 
+def product_price_create(data):
+    required_fields = productprice.required_fields_to_create.copy()
+    str_data = str(data)
+    if(str_data=="b''"):
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    dict_data = json.loads(data)
+    for item in productprice.required_fields_to_create:
+        if item in dict_data:
+            required_fields.remove(item)
+    if len(required_fields) != 0:
+        print("Hello")
+        return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
+    
+    productprice_object = productprice.ProductPrice()
+    dict_data[product.table_name] = repository.get_product_by_id(dict_data[productprice.product_price_product_id],False)
+    dict_data[pricetype.table_name] = repository.get_pricetype_by_id(dict_data[productprice.product_price_price_type_id],False)
+    dict_data[productprice.product_price_created_at] = datetime.now().timestamp()
+    productprice_object.__dict__ = dict_data
+    try:
+        last_id = repository.query_productprice_insert(productprice_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
 ################################################################################################################################################
 
 # with open("price_type.txt", encoding="utf8") as file:

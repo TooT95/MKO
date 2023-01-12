@@ -10,7 +10,7 @@ def hello_world(name=None):
 
 ################################################################ -- product -- ################################################################
 
-@app.route('/product',methods = ['PUT','GET','POST'])
+@app.route('/product',methods = ['PUT','GET','POST','DELETE'])
 def product():
     if(request.method=='GET'):
         limit = request.args.get('limit')
@@ -18,6 +18,10 @@ def product():
         return response.product_list_response(limit,page)
     elif(request.method=='PUT'):
         return response.product_create(request.data)
+    elif(request.method=='POST'):
+        return response.product_update(request.data)
+    elif(request.method=='DELETE'):
+        return response.product_delete(request.data)
     else:
         return response.method_not_found()
 
@@ -73,6 +77,20 @@ def productPrice(param):
     if param == 'priceType':
         id = request.args.get('id')
         return response.product_price(id)
+    if param == 'product':
+        id = request.args.get('id')
+        return response.product_price(id,False)
+    else:
+        return response.method_not_found()
+
+@app.route('/productPrice',methods = ['PUT','GET','POST'])
+def priceTypeList():
+    if(request.method=='GET'):
+        limit = request.args.get('limit')
+        page = request.args.get('page')
+        return response.product_price_list(limit,page)
+    elif(request.method=='PUT'):
+        return response.product_price_create(request.data)
     else:
         return response.method_not_found()
 

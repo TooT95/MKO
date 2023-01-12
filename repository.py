@@ -28,6 +28,27 @@ def get_product_by_id(id,is_uid):
         product = product_model.Product(*product_cursor)
         return product.toJson()
 
+def delete_product(product_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(query_delete(product_model.table_name,product_object.id))
+    connection.commit()
+    return cursor.lastrowid
+
+def status_change_product(product_object,status):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(query_status_change(product_model.table_name,product_object.id,status))
+    connection.commit()
+    return cursor.lastrowid
+
+def update_product(product_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(product_model.query_product_update(product_object))
+    connection.commit()
+    return cursor.lastrowid
+
 def create_product(product_object):
     connection = sqlite3.connect(database_name)
     cursor = connection.cursor()
@@ -75,15 +96,29 @@ def get_pricetype_by_id(id,is_uid):
 def get_product_price(id,by_price_type):
     connection = sqlite3.connect(database_name)
     if(by_price_type):
-        # cursor = connection.execute(pricetype_model.query_pricetype_by_uid(id))
-        return None
-    else:
         cursor = connection.execute(productprice_model.query_product_price_pricetype(id))
-    productprice_cursor = cursor.fetchone()
-    if productprice_cursor == None:
-        return None
     else:
-        pricetype = productprice_model.ProductPrice(*productprice_cursor)
-        return pricetype.toJson()
+        cursor = connection.execute(productprice_model.query_product_price_product(id))
+    productprice_cursor = cursor.fetchall()
+    productprice_list = []
+    for cursor_item in productprice_cursor:
+        pricetype = productprice_model.ProductPrice(*cursor_item)
+        productprice_list.append(pricetype.toJson())
+    return productprice_list
 
+def get_product_price_list(limit,page):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(productprice_model.query_product_price_list(limit,page))
+    product_list = []
+    for item in cursor.fetchall():
+        product = productprice_model.ProductPrice(*item)
+        product_list.append(product.toJson())
+    return product_list
+
+def query_productprice_insert(productprice_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(productprice_model.query_product_price_insert(productprice_object))
+    connection.commit()
+    return cursor.lastrowid
 ################################################################################################################################################

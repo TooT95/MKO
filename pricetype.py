@@ -28,7 +28,7 @@ class PriceType:
     created_at = 0.0
     is_active = 0
 
-    def __init__(self,id=0,name="",created_at=0.0,uid="",is_active = 0) -> None:
+    def __init__(self,id=0,name="",uid="",created_at=0.0,is_active = 0) -> None:
         self.id = id
         self.name = name
         self.created_at = created_at
