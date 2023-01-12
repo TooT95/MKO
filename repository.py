@@ -3,7 +3,7 @@ from utils import *
 import product as product_model
 import pricetype as pricetype_model
 import productprice as productprice_model
-
+import client as client_model
 
 ################################################################ -- util -- ################################################################
 
@@ -14,10 +14,10 @@ def delete_element(table_name,id):
     connection.commit()
     return cursor.lastrowid
 
-def status_change_elem(id,status):
+def status_change_elem(table_name,id,status):
     connection = sqlite3.connect(database_name)
     cursor = connection.cursor()
-    cursor = cursor.execute(query_status_change(product_model.table_name,id,status))
+    cursor = cursor.execute(query_status_change(table_name,id,status))
     connection.commit()
     return cursor.lastrowid
 
@@ -146,6 +146,42 @@ def query_productprice_insert(productprice_object):
     connection = sqlite3.connect(database_name)
     cursor = connection.cursor()
     cursor = cursor.execute(productprice_model.query_product_price_insert(productprice_object))
+    connection.commit()
+    return cursor.lastrowid
+################################################################################################################################################
+
+################################################################ -- client -- ################################################################
+
+def get_client(id):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(client_model.query_client_by_id(id))
+    client_cursor = cursor.fetchone()
+    if client_cursor == None:
+        return None
+    else:
+        pricetype = client_model.Client(*client_cursor)
+        return pricetype.toJson()
+
+def get_client_list(limit,page):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(client_model.query_client_list(limit,page))
+    client_list = []
+    for item in cursor.fetchall():
+        client = client_model.Client(*item)
+        client_list.append(client.toJson())
+    return client_list
+
+def update_client(productprice_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(client_model.query_client_update(productprice_object))
+    connection.commit()
+    return cursor.lastrowid
+
+def create_client(productprice_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(client_model.query_client_insert(productprice_object))
     connection.commit()
     return cursor.lastrowid
 ################################################################################################################################################

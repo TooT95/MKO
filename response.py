@@ -5,6 +5,7 @@ import product
 import productprice
 import pricetype
 import utils
+import client
 from datetime import datetime
 
 ################################################################ -- message and codes -- ################################################################
@@ -69,7 +70,7 @@ def find_elem_delete(dict_data,table_name):
             return response_template(message_success,message_code_success,last_id)
         elif(action=='change_status'):
             status = dict_data[utils.field_status]
-            last_id = repository.status_change_elem(id,status)
+            last_id = repository.status_change_elem(table_name,id,status)
             return response_template(message_success,message_code_success,last_id)
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
@@ -92,6 +93,8 @@ def get_list_response(object_type,limit,page):
         result = repository.get_pricetype_list(limit,page)
     elif(object_type == utils._productprice):
         result = repository.get_product_price_list(limit,page)
+    elif(object_type == utils._client):
+        result = repository.get_client_list(limit,page)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     return response_template(message_success,message_code_success,result,page_limit)
@@ -107,8 +110,11 @@ def get_by_id(object_type,id,by_pricetype=False):
         _result = repository.get_pricetype_by_id(id)
     elif(object_type == utils._productprice):
         _result = repository.get_product_price(id,by_pricetype)
+    elif(object_type == utils._client):
+        _result = repository.get_client(id)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
+    
     if(_result==None):
         message = message_not_found_element
         message_code = message_code_not_found_element
@@ -281,4 +287,60 @@ def product_price_create(data):
         return response_template(message_success,message_code_success,last_id)
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)
-   
+################################################################################################################################################
+
+
+################################################################ -- client -- ################################################################
+
+def client_list_response(limit,page):    
+    return get_list_response(utils._client,limit,page)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def client_by_id_response(id):
+    return get_by_id(utils._client,id)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def client_delete(data):
+    check_result = check_field_to_empty(data,client.required_fields_to_delete)
+    if check_result != None:
+        return check_result
+
+    dict_data = json.loads(data)
+    return find_elem_delete(dict_data,client.table_name)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def client_update(data):
+    check_result = check_field_to_empty(data,client.required_fields_to_update)
+    if check_result != None:
+        return check_result
+    
+    dict_data = json.loads(data)
+    client_object = client.Client()
+    client_object.__dict__ = dict_data
+    try:
+        last_id = repository.update_client(client_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def client_create(data):
+    check_result = check_field_to_empty(data,client.required_fields_to_create)
+    if check_result != None:
+        return check_result
+    
+    dict_data = json.loads(data)
+    product_object = client.Client()
+    dict_data[client.client_created_at] = datetime.now().timestamp()
+    product_object.__dict__ = dict_data
+    try:
+        last_id = repository.create_client(product_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+################################################################################################################################################
