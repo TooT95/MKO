@@ -1,6 +1,10 @@
 
 database_name = "mko.db"
 
+_product = 0
+_pricetype = 1
+_productprice = 2
+
 field_action = "action"
 field_status = "status"
 field_is_active = "is_active"

@@ -31,9 +31,6 @@ def productSub(param):
         if(param=='id'):
             id = request.args.get('id')
             return response.product_by_id_response(id)
-        elif(param=='uid'):
-            uid = request.args.get('uid')
-            return response.product_by_id_response(uid,True)
         else:
             return response.method_not_found()
     else:
@@ -64,9 +61,6 @@ def priceTypeSub(param):
         if(param=='id'):
             id = request.args.get('id')
             return response.pricetype_by_id_response(id)
-        elif(param=='uid'):
-            uid = request.args.get('uid')
-            return response.pricetype_by_id_response(uid,True)
         else:
             return response.method_not_found()
     else:
@@ -87,7 +81,7 @@ def productPrice(param):
     else:
         return response.method_not_found()
 
-@app.route('/productPrice',methods = ['PUT','GET','POST'])
+@app.route('/productPrice',methods = ['PUT','GET','POST','DELETE'])
 def priceTypeList():
     if(request.method=='GET'):
         limit = request.args.get('limit')
@@ -95,6 +89,10 @@ def priceTypeList():
         return response.product_price_list(limit,page)
     elif(request.method=='PUT'):
         return response.product_price_create(request.data)
+    elif(request.method=='POST'):
+        return response.product_price_update(request.data)
+    elif(request.method=='DELETE'):
+        return response.product_price_delete(request.data)
     else:
         return response.method_not_found()
 

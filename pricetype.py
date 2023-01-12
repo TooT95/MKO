@@ -5,7 +5,6 @@ import utils
 table_name = "price_type"
 
 # table columns
-pricetype_uid = "uid"
 pricetype_id = "id"
 pricetype_name = "name"
 pricetype_created_at = "created_at"
@@ -19,10 +18,8 @@ def query_pricetype_list(limit,page):
     return f"SELECT * FROM {table_name} ORDER BY {pricetype_id} LIMIT {(page-1)*limit},{limit}"
 def query_pricetype_by_id(id):
     return f"SELECT * FROM {table_name} WHERE {pricetype_id} = {id}"
-def query_pricetype_by_uid(id):
-    return f"SELECT * FROM {table_name} WHERE {pricetype_uid} = '{id}'"
 def query_pricetype_insert(pricetype_object):
-    return f"INSERT INTO {table_name} ({pricetype_name},{pricetype_uid},{pricetype_created_at}) VALUES ('{pricetype_object.name}','{pricetype_object.uid}',{pricetype_object.created_at})"
+    return f"INSERT INTO {table_name} ({pricetype_name},{pricetype_created_at}) VALUES ('{pricetype_object.name}','{pricetype_object.uid}',{pricetype_object.created_at})"
 def query_pricetype_update(pricetype_object):
     return f"UPDATE {table_name} SET {pricetype_name} = '{pricetype_object.name}' WHERE {pricetype_id} = {pricetype_object.id}"
 
@@ -46,6 +43,5 @@ class PriceType:
             pricetype_id:self.id,
             pricetype_name:self.name,
             pricetype_created_at:self.created_at,
-            pricetype_uid:self.uid,
             pricetype_is_active:self.is_active,
         }

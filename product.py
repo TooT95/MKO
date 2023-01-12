@@ -5,7 +5,6 @@ import utils
 table_name = "product"
 
 # table columns
-product_uid = "uid"
 product_id = "id"
 product_name = "name"
 product_created_at = "created_at"
@@ -19,13 +18,11 @@ def query_product_list(limit,page):
     return f"SELECT * FROM {table_name} ORDER BY {product_id} LIMIT {(page-1)*limit},{limit}"
 def query_product_by_id(id):
     return f"SELECT * FROM {table_name} WHERE {product_id} = {id}"
-def query_product_by_uid(id):
-    return f"SELECT * FROM {table_name} WHERE {product_uid} = '{id}'"
 def query_product_insert(product_object):
-    return f"INSERT INTO {table_name} ({product_name},{product_uid},{product_created_at}) VALUES ('{product_object.name}','{product_object.uid}',{product_object.created_at})"
+    return f"INSERT INTO {table_name} ({product_name},{product_created_at}) VALUES ('{product_object.name}','{product_object.uid}',{product_object.created_at})"
 def query_product_update(product_object):
     return f"UPDATE {table_name} SET {product_name} = '{product_object.name}' WHERE {product_id} = {product_object.id}"
-    
+
 class Product:
 
     id = 0
@@ -46,6 +43,5 @@ class Product:
             product_id:self.id,
             product_name:self.name,
             product_created_at:self.created_at,
-            product_uid:self.uid,
             product_is_active:self.is_active,
         }
