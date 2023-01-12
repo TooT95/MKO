@@ -4,7 +4,6 @@ import repository
 import product
 import productprice
 import pricetype
-import uuid
 import utils
 from datetime import datetime
 
@@ -147,7 +146,6 @@ def product_create(data):
         return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
     
     product_object = product.Product()
-    dict_data[product.product_uid] = uuid.uuid1()
     dict_data[product.product_created_at] = datetime.now().timestamp()
     product_object.__dict__ = dict_data
     try:
@@ -198,7 +196,6 @@ def pricetype_create(data):
         return response_template(message_required_fields_empty.format(','.join(required_fields)),message_code_required_fields_empty)
     
     pricetype_object = pricetype.PriceType()
-    dict_data[pricetype.pricetype_uid] = uuid.uuid1()
     dict_data[pricetype.pricetype_created_at] = datetime.now().timestamp()
     pricetype_object.__dict__ = dict_data
     try:
@@ -300,7 +297,6 @@ def product_price_create(data):
 #         dict_data = {}
 #         dict_data['name'] = item['ВидЦены']
 #         pricetype_object = pricetype.PriceType()
-#         dict_data[pricetype.pricetype_uid] = item['УникальныйИдентификатор']
 #         dict_data[pricetype.pricetype_created_at] = datetime.now().timestamp()
 #         pricetype_object.__dict__ = dict_data
 #         lastid = repository.create_pricetype(pricetype_object)

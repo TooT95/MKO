@@ -19,23 +19,21 @@ def query_pricetype_list(limit,page):
 def query_pricetype_by_id(id):
     return f"SELECT * FROM {table_name} WHERE {pricetype_id} = {id}"
 def query_pricetype_insert(pricetype_object):
-    return f"INSERT INTO {table_name} ({pricetype_name},{pricetype_created_at}) VALUES ('{pricetype_object.name}','{pricetype_object.uid}',{pricetype_object.created_at})"
+    return f"INSERT INTO {table_name} ({pricetype_name},{pricetype_created_at}) VALUES ('{pricetype_object.name}',{pricetype_object.created_at})"
 def query_pricetype_update(pricetype_object):
     return f"UPDATE {table_name} SET {pricetype_name} = '{pricetype_object.name}' WHERE {pricetype_id} = {pricetype_object.id}"
 
 class PriceType:
 
     id = 0
-    uid = ""
     name = ""
     created_at = 0.0
     is_active = 0
 
-    def __init__(self,id=0,name="",uid="",created_at=0.0,is_active = 0) -> None:
+    def __init__(self,id=0,name="",created_at=0.0,is_active = 0) -> None:
         self.id = id
         self.name = name
         self.created_at = created_at
-        self.uid = uid
         self.is_active = is_active
 
     def toJson(self):
