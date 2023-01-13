@@ -21,9 +21,9 @@ def query_order_list(limit,page):
 def query_order_by_id(id):
     return f"SELECT * FROM {table_name} WHERE {order_id} = {id}"
 def query_order_insert(order_object):
-    return f"INSERT INTO {table_name} ({order_date},{order_client_id},{order_created_at}) VALUES ('{order_object.name}','{order_object.inn}',{order_object.created_at})"
+    return f"INSERT INTO {table_name} ({order_date},{order_client_id},{order_status},{order_created_at}) VALUES ({order_object.date},{order_object.client_id},'{order_object.status}',{order_object.created_at})"
 def query_order_update(order_object):
-    return f"UPDATE {table_name} SET {order_date} = '{order_object.name}',{order_client_id} = '{order_object.inn}' WHERE {order_id} = {order_object.id}"
+    return f"UPDATE {table_name} SET {order_date} = '{order_object.date}',{order_client_id} = '{order_object.client_id}' WHERE {order_id} = {order_object.id}"
 
 class Order:
 
