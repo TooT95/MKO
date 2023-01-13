@@ -152,6 +152,9 @@ def orderSub(param):
         if(param=='id'):
             id = request.args.get('id')
             return response.order_by_id_response(id)
+        if(param=='detail'):
+            id = request.args.get('id')
+            return response.order_by_detail_response(id)
         else:
             return response.method_not_found()
     else:
@@ -176,7 +179,7 @@ def orderProduct():
     else:
         return response.method_not_found()
 
-@app.route('/order/<param>',methods = ['GET'])
+@app.route('/orderProduct/<param>',methods = ['GET'])
 def orderProductSub(param):
     if(request.method=='GET'):
         if(param=='id'):

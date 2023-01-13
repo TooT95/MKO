@@ -236,6 +236,15 @@ def get_orderproduct(id):
         orderproduct = orderproduct_model.OrderProduct(*orderproduct_cursor)
         return orderproduct.toJson()
 
+def get_orderproduct_by_order_id(order_id):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(orderproduct_model.query_orderproduct_by_order_id(order_id))
+    orderproduct_list = []
+    for item in cursor.fetchall():
+        orderproduct = orderproduct_model.OrderProduct(*item)
+        orderproduct_list.append(orderproduct.toJson())
+    return orderproduct_list
+
 def get_orderproduct_list(limit,page):
     connection = sqlite3.connect(database_name)
     cursor = connection.execute(orderproduct_model.query_orderproduct_list(limit,page))

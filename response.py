@@ -115,7 +115,7 @@ def get_by_id(object_type,id,by_pricetype=False):
         _result = repository.get_client(id)
     elif(object_type == utils._order):
         _result = repository.get_order(id)
-    elif(object_type == utils._order):
+    elif(object_type == utils._orderproduct):
         _result = repository.get_orderproduct(id)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
@@ -360,6 +360,20 @@ def order_list_response(limit,page):
 def order_by_id_response(id):
     return get_by_id(utils._order,id)
 
+def order_by_detail_response(id):
+    if(id==None):
+        return response_template(message_not_found_element,message_code_not_found_element,None)    
+    _result = repository.get_order(id)
+    
+    if(_result==None):
+        message = message_not_found_element
+        message_code = message_code_not_found_element
+    else:
+        _result['products'] = repository.get_orderproduct_by_order_id(id)
+        message = message_success
+        message_code = message_code_success
+    return response_template(message,message_code,_result)
+
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 def order_delete(data):
@@ -450,7 +464,6 @@ def orderproduct_create(data):
     
     dict_data = json.loads(data)
     orderproduct_object = orderproduct.OrderProduct()
-    dict_data[orderproduct.order_created_at] = datetime.now().timestamp()
     orderproduct_object.__dict__ = dict_data
     try:
         last_id = repository.create_orderproduct(orderproduct_object)
