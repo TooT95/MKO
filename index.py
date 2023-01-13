@@ -159,6 +159,36 @@ def orderSub(param):
 
 ################################################################################################################################################
 
+################################################################ -- order product -- ################################################################
+
+@app.route('/orderProduct',methods = ['PUT','GET','POST','DELETE'])
+def orderProduct():
+    if(request.method=='GET'):
+        limit = request.args.get('limit')
+        page = request.args.get('page')
+        return response.orderproduct_list_response(limit,page)
+    elif(request.method=='PUT'):
+        return response.orderproduct_create(request.data)
+    elif(request.method=='POST'):
+        return response.orderproduct_update(request.data)
+    elif(request.method=='DELETE'):
+        return response.orderproduct_delete(request.data)
+    else:
+        return response.method_not_found()
+
+@app.route('/order/<param>',methods = ['GET'])
+def orderProductSub(param):
+    if(request.method=='GET'):
+        if(param=='id'):
+            id = request.args.get('id')
+            return response.orderproduct_by_id_response(id)
+        else:
+            return response.method_not_found()
+    else:
+        return response.method_not_found()
+
+################################################################################################################################################
+
 @app.route("/files/<file_name>")
 def serve_file(file_name):
     """Set up a dynamic routes for directory items at /files/"""

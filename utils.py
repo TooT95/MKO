@@ -6,6 +6,7 @@ _pricetype = 1
 _productprice = 2
 _client = 3
 _order = 4
+_orderproduct = 5
 
 field_action = "action"
 field_status = "status"

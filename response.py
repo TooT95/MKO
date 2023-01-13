@@ -1,7 +1,7 @@
 from flask import Response
 import json
 import repository 
-import product,productprice,pricetype,client,order
+import product,productprice,pricetype,client,order,orderproduct
 import utils
 from datetime import datetime
 
@@ -94,6 +94,8 @@ def get_list_response(object_type,limit,page):
         result = repository.get_client_list(limit,page)
     elif(object_type == utils._order):
         result = repository.get_order_list(limit,page)
+    elif(object_type == utils._orderproduct):
+        result = repository.get_orderproduct_list(limit,page)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     return response_template(message_success,message_code_success,result,page_limit)
@@ -113,6 +115,8 @@ def get_by_id(object_type,id,by_pricetype=False):
         _result = repository.get_client(id)
     elif(object_type == utils._order):
         _result = repository.get_order(id)
+    elif(object_type == utils._order):
+        _result = repository.get_orderproduct(id)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     
@@ -234,7 +238,7 @@ def pricetype_create(data):
 
 ################################################################################################################################################
 
-################################################################ -- price type -- ################################################################
+################################################################ -- product price -- ################################################################
 
 def product_price(id,by_pricetype=True):
     return get_by_id(utils._productprice,id,by_pricetype)
@@ -401,3 +405,57 @@ def order_create(data):
 
 ################################################################################################################################################
 
+################################################################ -- order product -- ################################################################
+
+def orderproduct_list_response(limit,page):    
+    return get_list_response(utils._orderproduct,limit,page)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def orderproduct_by_id_response(id):
+    return get_by_id(utils._orderproduct,id)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def orderproduct_delete(data):
+    check_result = check_field_to_empty(data,orderproduct.required_fields_to_delete)
+    if check_result != None:
+        return check_result
+
+    dict_data = json.loads(data)
+    return find_elem_delete(dict_data,orderproduct.table_name)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def orderproduct_update(data):
+    check_result = check_field_to_empty(data,orderproduct.required_fields_to_update)
+    if check_result != None:
+        return check_result
+    
+    dict_data = json.loads(data)
+    orderproduct_object = orderproduct.OrderProduct()
+    orderproduct_object.__dict__ = dict_data
+    try:
+        last_id = repository.update_orderproduct(orderproduct_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def orderproduct_create(data):
+    check_result = check_field_to_empty(data,orderproduct.required_fields_to_create)
+    if check_result != None:
+        return check_result
+    
+    dict_data = json.loads(data)
+    orderproduct_object = orderproduct.OrderProduct()
+    dict_data[orderproduct.order_created_at] = datetime.now().timestamp()
+    orderproduct_object.__dict__ = dict_data
+    try:
+        last_id = repository.create_orderproduct(orderproduct_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+################################################################################################################################################

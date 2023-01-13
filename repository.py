@@ -5,6 +5,7 @@ import pricetype as pricetype_model
 import productprice as productprice_model
 import client as client_model
 import order as order_model
+import orderproduct as orderproduct_model
 
 ################################################################ -- util -- ################################################################
 
@@ -219,6 +220,42 @@ def create_order(order_object):
     connection = sqlite3.connect(database_name)
     cursor = connection.cursor()
     cursor = cursor.execute(order_model.query_order_insert(order_object))
+    connection.commit()
+    return cursor.lastrowid
+################################################################################################################################################
+
+################################################################ -- order product -- ################################################################
+
+def get_orderproduct(id):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(orderproduct_model.query_orderproduct_by_id(id))
+    orderproduct_cursor = cursor.fetchone()
+    if orderproduct_cursor == None:
+        return None
+    else:
+        orderproduct = orderproduct_model.OrderProduct(*orderproduct_cursor)
+        return orderproduct.toJson()
+
+def get_orderproduct_list(limit,page):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(orderproduct_model.query_orderproduct_list(limit,page))
+    orderproduct_list = []
+    for item in cursor.fetchall():
+        orderproduct = orderproduct_model.OrderProduct(*item)
+        orderproduct_list.append(orderproduct.toJson())
+    return orderproduct_list
+
+def update_orderproduct(order_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(orderproduct_model.query_orderproduct_update(order_object))
+    connection.commit()
+    return cursor.lastrowid
+
+def create_orderproduct(order_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(orderproduct_model.query_orderproduct_insert(order_object))
     connection.commit()
     return cursor.lastrowid
 ################################################################################################################################################
