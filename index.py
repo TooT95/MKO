@@ -192,6 +192,36 @@ def orderProductSub(param):
 
 ################################################################################################################################################
 
+################################################################ -- payment schedule -- ################################################################
+
+@app.route('/paymentSchedule',methods = ['PUT','GET','POST','DELETE'])
+def paymentSchedule():
+    if(request.method=='GET'):
+        limit = request.args.get('limit')
+        page = request.args.get('page')
+        return response.paymentschedule_list_response(limit,page)
+    elif(request.method=='PUT'):
+        return response.paymentschedule_create(request.data)
+    elif(request.method=='POST'):
+        return response.paymentschedule_update(request.data)
+    elif(request.method=='DELETE'):
+        return response.paymentschedule_delete(request.data)
+    else:
+        return response.method_not_found()
+
+@app.route('/paymentSchedule/<param>',methods = ['GET'])
+def paymentScheduleSub(param):
+    if(request.method=='GET'):
+        if(param=='id'):
+            id = request.args.get('id')
+            return response.paymentschedule_by_id_response(id)
+        else:
+            return response.method_not_found()
+    else:
+        return response.method_not_found()
+
+################################################################################################################################################
+
 @app.route("/files/<file_name>")
 def serve_file(file_name):
     """Set up a dynamic routes for directory items at /files/"""

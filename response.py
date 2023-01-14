@@ -1,7 +1,7 @@
 from flask import Response
 import json
 import repository 
-import product,productprice,pricetype,client,order,orderproduct
+import product,productprice,pricetype,client,order,orderproduct,paymentschedule
 import utils
 from datetime import datetime
 
@@ -96,6 +96,8 @@ def get_list_response(object_type,limit,page):
         result = repository.get_order_list(limit,page)
     elif(object_type == utils._orderproduct):
         result = repository.get_orderproduct_list(limit,page)
+    elif(object_type == utils._paymentschedule):
+        result = repository.get_paymentschedule_list(limit,page)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     return response_template(message_success,message_code_success,result,page_limit)
@@ -117,6 +119,8 @@ def get_by_id(object_type,id,by_pricetype=False):
         _result = repository.get_order(id)
     elif(object_type == utils._orderproduct):
         _result = repository.get_orderproduct(id)
+    elif(object_type == utils._paymentschedule):
+        _result = repository.get_paymentschedule(id)
     else:
         return response_template(message_method_not_found,message_code_method_not_found)
     
@@ -369,7 +373,8 @@ def order_by_detail_response(id):
         message = message_not_found_element
         message_code = message_code_not_found_element
     else:
-        _result['products'] = repository.get_orderproduct_by_order_id(id)
+        _result[product.table_name] = repository.get_orderproduct_by_order_id(id)
+        _result[paymentschedule.table_name] = repository.get_paymentschedule_by_order_id(id)
         message = message_success
         message_code = message_code_success
     return response_template(message,message_code,_result)
@@ -467,6 +472,60 @@ def orderproduct_create(data):
     orderproduct_object.__dict__ = dict_data
     try:
         last_id = repository.create_orderproduct(orderproduct_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+################################################################################################################################################
+
+################################################################ -- payment schedule -- ################################################################
+
+def paymentschedule_list_response(limit,page):    
+    return get_list_response(utils._paymentschedule,limit,page)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def paymentschedule_by_id_response(id):
+    return get_by_id(utils._paymentschedule,id)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def paymentschedule_delete(data):
+    check_result = check_field_to_empty(data,paymentschedule.required_fields_to_delete)
+    if check_result != None:
+        return check_result
+
+    dict_data = json.loads(data)
+    return find_elem_delete(dict_data,paymentschedule.table_name)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def paymentschedule_update(data):
+    check_result = check_field_to_empty(data,paymentschedule.required_fields_to_update)
+    if check_result != None:
+        return check_result
+    
+    dict_data = json.loads(data)
+    paymentschedule_object = paymentschedule.PaymentSchedule()
+    paymentschedule_object.__dict__ = dict_data
+    try:
+        last_id = repository.update_paymentschedule(paymentschedule_object)
+        return response_template(message_success,message_code_success,last_id)
+    except Exception as ex:
+        return response_template(message_error.format(str(ex)),message_code_error)
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+def paymentschedule_create(data):
+    check_result = check_field_to_empty(data,paymentschedule.required_fields_to_create)
+    if check_result != None:
+        return check_result
+    
+    dict_data = json.loads(data)
+    paymentschedule_object = paymentschedule.PaymentSchedule()
+    paymentschedule_object.__dict__ = dict_data
+    try:
+        last_id = repository.create_paymentschedule(paymentschedule_object)
         return response_template(message_success,message_code_success,last_id)
     except Exception as ex:
         return response_template(message_error.format(str(ex)),message_code_error)

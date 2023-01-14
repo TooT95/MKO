@@ -6,6 +6,7 @@ import productprice as productprice_model
 import client as client_model
 import order as order_model
 import orderproduct as orderproduct_model
+import paymentschedule as paymentschedule_model
 
 ################################################################ -- util -- ################################################################
 
@@ -265,6 +266,51 @@ def create_orderproduct(order_object):
     connection = sqlite3.connect(database_name)
     cursor = connection.cursor()
     cursor = cursor.execute(orderproduct_model.query_orderproduct_insert(order_object))
+    connection.commit()
+    return cursor.lastrowid
+################################################################################################################################################
+
+################################################################ -- payment schedule -- ################################################################
+
+def get_paymentschedule(id):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(paymentschedule_model.query_paymentschedule_by_id(id))
+    paymentschedule_cursor = cursor.fetchone()
+    if paymentschedule_cursor == None:
+        return None
+    else:
+        paymentschedule = paymentschedule_model.PaymentSchedule(*paymentschedule_cursor)
+        return paymentschedule.toJson()
+
+def get_paymentschedule_by_order_id(order_id):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(paymentschedule_model.query_paymentschedule_by_order_id(order_id))
+    paymentschedule_list = []
+    for item in cursor.fetchall():
+        paymentschedule = paymentschedule_model.PaymentSchedule(*item)
+        paymentschedule_list.append(paymentschedule.toJson())
+    return paymentschedule_list
+
+def get_paymentschedule_list(limit,page):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.execute(paymentschedule_model.query_paymentschedule_list(limit,page))
+    paymentschedule_list = []
+    for item in cursor.fetchall():
+        paymentschedule = paymentschedule_model.PaymentSchedule(*item)
+        paymentschedule_list.append(paymentschedule.toJson())
+    return paymentschedule_list
+
+def update_paymentschedule(order_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(paymentschedule_model.query_paymentschedule_update(order_object))
+    connection.commit()
+    return cursor.lastrowid
+
+def create_paymentschedule(order_object):
+    connection = sqlite3.connect(database_name)
+    cursor = connection.cursor()
+    cursor = cursor.execute(paymentschedule_model.query_paymentschedule_insert(order_object))
     connection.commit()
     return cursor.lastrowid
 ################################################################################################################################################
